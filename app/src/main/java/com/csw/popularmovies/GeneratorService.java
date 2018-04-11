@@ -1,7 +1,8 @@
 package com.csw.popularmovies;
 
-import com.csw.popularmovies.Data.Page;
-import com.csw.popularmovies.Data.Trailers;
+import com.csw.popularmovies.Data.Movies.Page;
+import com.csw.popularmovies.Data.Reviews.Reviews;
+import com.csw.popularmovies.Data.Trailers.Trailers;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -16,4 +17,7 @@ public interface GeneratorService {
 
     @GET("{id}/videos")
     Call<Trailers> getTrailers(@Path("id") String id, @Query("api_key") String key);
+
+    @GET("{id}/reviews")
+    Call<Reviews> getReviews(@Path("id") String id, @Query("api_key") String key);
 }

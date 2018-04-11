@@ -1,4 +1,4 @@
-package com.csw.popularmovies.Data;
+package com.csw.popularmovies.Data.Movies;
 
 
 import java.util.List;

@@ -1,5 +1,5 @@
 
-package com.csw.popularmovies.Data;
+package com.csw.popularmovies.Data.Trailers;
 
 import java.util.List;
 import com.google.gson.annotations.Expose;

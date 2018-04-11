@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 
-import com.csw.popularmovies.Data.Movie;
+import com.csw.popularmovies.Data.Movies.Movie;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -30,7 +30,7 @@ public class MovieImagesAdapter extends RecyclerView.Adapter<MovieImagesAdapter.
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        //Inflate the pic_layout into the recyclerView
+        //Inflate the pic_layout into the trailersRecyclerView
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.pic_layout,parent,false);
 

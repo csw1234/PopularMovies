@@ -1,23 +1,20 @@
 package com.csw.popularmovies;
 
-import android.content.ActivityNotFoundException;
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
+        import android.content.ActivityNotFoundException;
+        import android.content.Context;
+        import android.content.Intent;
+        import android.net.Uri;
+        import android.support.annotation.NonNull;
+        import android.support.v7.widget.RecyclerView;
+        import android.view.LayoutInflater;
+        import android.view.View;
+        import android.view.ViewGroup;
+        import android.widget.Button;
+        import android.widget.TextView;
 
-import com.csw.popularmovies.Data.Movie;
-import com.csw.popularmovies.Data.Trailer;
-import com.squareup.picasso.Picasso;
+        import com.csw.popularmovies.Data.Trailers.Trailer;
 
-import java.util.List;
+        import java.util.List;
 
 public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.MyViewHolder> {
     //List to hold the images
@@ -32,7 +29,7 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.MyView
     @NonNull
     @Override
     public TrailersAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        //Inflate the pic_layout into the recyclerView
+        //Inflate the pic_layout into the trailersRecyclerView
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.trailer_recyler_cell,parent,false);
 
@@ -64,7 +61,7 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.MyView
     class MyViewHolder extends RecyclerView.ViewHolder{
         TextView textView;
         Button playButton;
-        
+
         MyViewHolder(View itemView) {
             super(itemView);
             //Set the mContext into view context

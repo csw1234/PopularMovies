@@ -1,4 +1,4 @@
-package com.csw.popularmovies.Data;
+package com.csw.popularmovies.Data.Movies;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

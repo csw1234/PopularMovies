@@ -13,8 +13,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.csw.popularmovies.Data.Page;
-import com.csw.popularmovies.Data.Movie;
+import com.csw.popularmovies.Data.Movies.Page;
+import com.csw.popularmovies.Data.Movies.Movie;
 
 import java.util.ArrayList;
 import java.util.List;

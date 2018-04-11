@@ -1,10 +1,8 @@
 package com.csw.popularmovies;
 
-import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,8 +10,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.csw.popularmovies.Data.Trailer;
-import com.csw.popularmovies.Data.Trailers;
+import com.csw.popularmovies.Data.Reviews.Review;
+import com.csw.popularmovies.Data.Reviews.Reviews;
+import com.csw.popularmovies.Data.Trailers.Trailer;
+import com.csw.popularmovies.Data.Trailers.Trailers;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -39,12 +39,14 @@ public class DetailActivity extends AppCompatActivity {
     private String mId;
 
     //RecyclerView the present the trailers
-    RecyclerView recyclerView;
+    RecyclerView trailersRecyclerView;
+    RecyclerView reviewsRecyclerView;
 
     @Override
     protected void onStart() {
         super.onStart();
-        loadMovies();
+        loadTrailers();
+        loadReviews();
     }
 
     @Override
@@ -53,11 +55,15 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
 
         ImageView movieImage = findViewById(R.id.image_iv);
+        reviewsRecyclerView = findViewById(R.id.recyclerviewReviews);
 
-        recyclerView = findViewById(R.id.recyclerviewTrailers);
+        trailersRecyclerView = findViewById(R.id.recyclerviewTrailers);
         //Set the RecyclerView
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(linearLayoutManager);
+        LinearLayoutManager trailersLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        trailersRecyclerView.setLayoutManager(trailersLayoutManager);
+
+        LinearLayoutManager reviewsLayoutManager = new LinearLayoutManager(this);
+        reviewsRecyclerView.setLayoutManager(reviewsLayoutManager);
 
         Intent intent = getIntent();
         if (intent == null) {
@@ -117,12 +123,11 @@ public class DetailActivity extends AppCompatActivity {
             releaseDateTV.setText(R.string.date_unknown);
         }
     }
-    //Loading the Movies
-    private void loadMovies(){
+    //Loading the trailers list
+    private void loadTrailers(){
         //Create the server call using Retrofit library
         GeneratorService generatorService = ServiceGenerator.retrofit
                 .create(GeneratorService.class);
-        //Starting the server call, if there's no parameter inside the SortBy parameter (SharedPreferences), the default is "popular movies"
         retrofit2.Call<Trailers> call =
                 generatorService.getTrailers(mId, getString(R.string.api_key));
         //Start the call, Async call
@@ -135,18 +140,53 @@ public class DetailActivity extends AppCompatActivity {
                     return;
                 }
                 if (response.body().getTrailers() != null){
-                    //Iterate over the images
+                    //Get all trailers
                     trailersList.addAll(response.body().getTrailers());
 
                 }
                 //Set the movies into the Adapter
                 TrailersAdapter movieImagesAdapter = new TrailersAdapter(trailersList);
-                recyclerView.setAdapter(movieImagesAdapter);
+                trailersRecyclerView.setAdapter(movieImagesAdapter);
 
             }
 
             @Override
             public void onFailure(Call<Trailers> call, Throwable t) {
+                Log.e("kk","error");
+            }
+        });
+
+    }
+
+    //Loading the trailers list
+    private void loadReviews(){
+        //Create the server call using Retrofit library
+        GeneratorService generatorService = ServiceGenerator.retrofit
+                .create(GeneratorService.class);
+        retrofit2.Call<Reviews> call =
+                generatorService.getReviews(mId, getString(R.string.api_key));
+        //Start the call, Async call
+        call.enqueue(new Callback<Reviews>() {
+            @Override
+            public void onResponse(Call<Reviews> call, Response<Reviews> response) {
+                List<Review> trailersList =new ArrayList<>();
+
+                if (response.body() == null){
+                    return;
+                }
+                if (response.body().getResults() != null){
+                    //Get all trailers
+                    trailersList.addAll(response.body().getResults());
+
+                }
+                //Set the movies into the Adapter
+                ReviewsAdapter movieImagesAdapter = new ReviewsAdapter(trailersList);
+                reviewsRecyclerView.setAdapter(movieImagesAdapter);
+
+            }
+
+            @Override
+            public void onFailure(Call<Reviews> call, Throwable t) {
                 Log.e("kk","error");
             }
         });
