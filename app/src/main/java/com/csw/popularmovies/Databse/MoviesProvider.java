@@ -7,13 +7,14 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.widget.Toast;
+
+import java.util.Objects;
 
 public class MoviesProvider extends ContentProvider {
 
-    /**
-     * Tag for the log messages
-     */
+    //Create database instance
     private MoviesDbHelper mDbHelper;
     private static final int MOVIES = 100;
     private static final int MOVIE_ID = 101;
@@ -38,13 +39,13 @@ public class MoviesProvider extends ContentProvider {
      * Perform the query for the given URI. Use the given projection, selection, selection arguments, and sort order.
      */
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
+    public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs,
                         String sortOrder) {
         //Get readable database
         SQLiteDatabase database = mDbHelper.getReadableDatabase();
 
         //This cursor will hold the result of the query
-        Cursor cursor = null;
+        Cursor cursor;
 
         //Figure out if the URI matcher can match the URI to a specific code
         int match = sUriMatcher.match(uri);
@@ -62,8 +63,7 @@ public class MoviesProvider extends ContentProvider {
 
         }
         //Set notfication URI on the Cursor
-        cursor.setNotificationUri(getContext().getContentResolver(), uri);
-
+        cursor.setNotificationUri(Objects.requireNonNull(getContext()).getContentResolver(), uri);
         return cursor;
     }
 
@@ -71,7 +71,7 @@ public class MoviesProvider extends ContentProvider {
      * Insert new data into the provider with the given ContentValues.
      */
     @Override
-    public Uri insert(Uri uri, ContentValues contentValues) {
+    public Uri insert(@NonNull Uri uri, ContentValues contentValues) {
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case MOVIES:
@@ -86,7 +86,6 @@ public class MoviesProvider extends ContentProvider {
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
         long id = database.insert(MoviesContract.MoviesEntry.TABLE_NAME, null, values);
 
-
         if (id != -1) {
             Toast.makeText(getContext(), "Movie saved with id: " + id, Toast.LENGTH_SHORT).show();
 
@@ -94,10 +93,13 @@ public class MoviesProvider extends ContentProvider {
             Toast.makeText(getContext(), "Error saving movie " + id, Toast.LENGTH_SHORT).show();
 
         }
-        getContext().getContentResolver().notifyChange(uri, null);
+        Objects.requireNonNull(getContext()).getContentResolver().notifyChange(uri, null);
         return ContentUris.withAppendedId(uri, id);
     }
 
+    /**
+     * Update data into the provider with the given ContentValues.
+     */
     @Override
     public int update(Uri uri, ContentValues contentValues, String selection, String[] selectionArgs) {
         final int match = sUriMatcher.match(uri);
@@ -123,9 +125,9 @@ public class MoviesProvider extends ContentProvider {
      */
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        //Get writeable database
+        //Get writable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
-        int rowsDeleted =0;
+        int rowsDeleted;
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case MOVIES:
@@ -142,7 +144,7 @@ public class MoviesProvider extends ContentProvider {
                 throw new IllegalArgumentException("Deletion is not supported for :" + uri);
         }
         if (rowsDeleted != 0) {
-            getContext().getContentResolver().notifyChange(uri, null);
+            Objects.requireNonNull(getContext()).getContentResolver().notifyChange(uri, null);
         }
         return rowsDeleted;
     }
@@ -151,13 +153,11 @@ public class MoviesProvider extends ContentProvider {
      * Returns the MIME type of data for the content URI.
      */
     @Override
-    public String getType(Uri uri) {
+    public String getType(@NonNull Uri uri) {
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case MOVIES:
                 return MoviesContract.MoviesEntry.CONTENT_LIST_TYPE;
-            case MOVIE_ID:
-                return MoviesContract.MoviesEntry.CONTENT_ITEM_TYPE;
             default:
                 throw new IllegalStateException("Unknown URI " + uri + "with match " + match);
         }

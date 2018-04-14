@@ -3,7 +3,7 @@ package com.csw.popularmovies;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,18 +14,13 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.csw.popularmovies.Data.Movies.Movie;
-import com.csw.popularmovies.Data.Reviews.Review;
+import com.csw.popularmovies.Adapters.MovieImagesAdapter;
+import com.csw.popularmovies.Adapters.ReviewsAdapter;
+import com.csw.popularmovies.Adapters.TrailersAdapter;
 import com.csw.popularmovies.Data.Reviews.Reviews;
-import com.csw.popularmovies.Data.Trailers.Trailer;
 import com.csw.popularmovies.Data.Trailers.Trailers;
 import com.csw.popularmovies.Databse.MoviesContract;
 import com.squareup.picasso.Picasso;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -49,11 +44,14 @@ public class DetailActivity extends AppCompatActivity {
 
     //RecyclerView the present the trailers
     RecyclerView trailersRecyclerView;
+    //RecyclerView the present the reviews
     RecyclerView reviewsRecyclerView;
-    ImageButton faovirteButton;
+    ImageButton favoriteButton;
+
     @Override
     protected void onStart() {
         super.onStart();
+        //Load trailers and reviews list
         loadTrailers();
         loadReviews();
     }
@@ -65,14 +63,12 @@ public class DetailActivity extends AppCompatActivity {
         mFavorite = true;
 
         ImageView movieImage = findViewById(R.id.image_iv);
-        faovirteButton = findViewById(R.id.favoriteButton);
+        favoriteButton = findViewById(R.id.favoriteButton);
         reviewsRecyclerView = findViewById(R.id.recyclerviewReviews);
-
         trailersRecyclerView = findViewById(R.id.recyclerviewTrailers);
         //Set the RecyclerView
         LinearLayoutManager trailersLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         trailersRecyclerView.setLayoutManager(trailersLayoutManager);
-
         LinearLayoutManager reviewsLayoutManager = new LinearLayoutManager(this);
         reviewsRecyclerView.setLayoutManager(reviewsLayoutManager);
 
@@ -81,13 +77,15 @@ public class DetailActivity extends AppCompatActivity {
             closeOnError();
         }
         //Get the data from the adapter
+        assert intent != null;
         mImageUrl = intent.getStringExtra(EXTRA_IMAGE);
-         mTitle = intent.getStringExtra(EXTRA_TITLE);
+        mTitle = intent.getStringExtra(EXTRA_TITLE);
         mOverview = intent.getStringExtra(EXTRA_OVERVIEW);
         mRating = intent.getStringExtra(EXTRA_RATING);
         mDate = intent.getStringExtra(EXTRA_DATE);
         mId = intent.getStringExtra(EXTRA_ID);
 
+        //Check if the movie is favorite
         checkFavorite();
 
         populateUI();
@@ -95,19 +93,21 @@ public class DetailActivity extends AppCompatActivity {
         Picasso.with(this)
                 .load(MovieImagesAdapter.buildImageUrl(mImageUrl))
                 .into(movieImage);
-        faovirteButton.setOnClickListener(new View.OnClickListener() {
+        favoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mFavorite){
+                //If the movie not in the favorite list add it, if it is delete it
+                if (mFavorite) {
                     deleteFavorite();
-                }else {
+                } else {
                     insertAsFavorite();
                 }
             }
         });
 
     }
-    private void insertAsFavorite(){
+
+    private void insertAsFavorite() {
         //Create a new map of values, where column names are the keys
         ContentValues mNewValues = new ContentValues();
         mNewValues.put(MoviesContract.MoviesEntry.COLUMN_MOVIE_ID, mId);
@@ -133,35 +133,36 @@ public class DetailActivity extends AppCompatActivity {
         TextView releaseDateTV = findViewById(R.id.release_date_tv);
 
         //Set text for movie title
-        if (!mTitle.equals("")){
-                titleTV.setText(mTitle);
-        }else{
+        if (!mTitle.equals("")) {
+            titleTV.setText(mTitle);
+        } else {
             titleTV.setText(R.string.no_title_message);
         }
 
         //Set text for overview
-        if (!mOverview.equals("")){
+        if (!mOverview.equals("")) {
             overviewTV.setText(mOverview);
-        }else{
+        } else {
             overviewTV.setText(R.string.no_oveview_message);
         }
 
         //Set text for user rating
-        if (!mRating.equals("")){
+        if (!mRating.equals("")) {
             userRatingTV.setText(mRating);
-        }else{
+        } else {
             userRatingTV.setText(R.string.rating_not_available_message);
         }
 
         //Set text for the release date
-        if (!mDate.equals("")){
+        if (!mDate.equals("")) {
             releaseDateTV.setText(mDate);
-        }else{
+        } else {
             releaseDateTV.setText(R.string.date_unknown);
         }
     }
+
     //Loading the trailers list
-    private void loadTrailers(){
+    private void loadTrailers() {
         //Create the server call using Retrofit library
         GeneratorService generatorService = ServiceGenerator.retrofit
                 .create(GeneratorService.class);
@@ -171,32 +172,24 @@ public class DetailActivity extends AppCompatActivity {
         call.enqueue(new Callback<Trailers>() {
             @Override
             public void onResponse(Call<Trailers> call, Response<Trailers> response) {
-                List<Trailer> trailersList =new ArrayList<>();
-
-                if (response.body() == null){
+                if (response.body() == null) {
                     return;
                 }
-                if (response.body().getTrailers() != null){
-                    //Get all trailers
-                    trailersList.addAll(response.body().getTrailers());
-
-                }
                 //Set the movies into the Adapter
-                TrailersAdapter movieImagesAdapter = new TrailersAdapter(trailersList);
+                TrailersAdapter movieImagesAdapter = new TrailersAdapter(response.body().getTrailers());
                 trailersRecyclerView.setAdapter(movieImagesAdapter);
-
             }
 
             @Override
             public void onFailure(Call<Trailers> call, Throwable t) {
-                Log.e("kk","error");
+                Log.e("Error", "Trailers server error");
             }
         });
 
     }
 
-    //Loading the trailers list
-    private void loadReviews(){
+    //Loading the reviews list
+    private void loadReviews() {
         //Create the server call using Retrofit library
         GeneratorService generatorService = ServiceGenerator.retrofit
                 .create(GeneratorService.class);
@@ -205,43 +198,38 @@ public class DetailActivity extends AppCompatActivity {
         //Start the call, Async call
         call.enqueue(new Callback<Reviews>() {
             @Override
-            public void onResponse(Call<Reviews> call, Response<Reviews> response) {
-                List<Review> trailersList =new ArrayList<>();
-
-                if (response.body() == null){
+            public void onResponse(@NonNull Call<Reviews> call, Response<Reviews> response) {
+                if (response.body() == null) {
                     return;
                 }
-                if (response.body().getResults() != null){
-                    //Get all trailers
-                    trailersList.addAll(response.body().getResults());
-
-                }
-                //Set the movies into the Adapter
-                ReviewsAdapter movieImagesAdapter = new ReviewsAdapter(trailersList);
+                //Set the reviews into the Adapter
+                ReviewsAdapter movieImagesAdapter = new ReviewsAdapter(response.body().getResults());
                 reviewsRecyclerView.setAdapter(movieImagesAdapter);
-
             }
 
             @Override
-            public void onFailure(Call<Reviews> call, Throwable t) {
-                Log.e("kk","error");
+            public void onFailure(@NonNull Call<Reviews> call, Throwable t) {
+                Log.e("Error", "Reviews server error");
             }
         });
-
     }
 
-    private void checkFavorite(){
-        Cursor cursor = getContentResolver().query(MoviesContract.MoviesEntry.CONTENT_URI, new String[]{MoviesContract.MoviesEntry.COLUMN_MOVIE_ID }
-        , MoviesContract.MoviesEntry.COLUMN_MOVIE_ID + "=?", new String[]{String.valueOf(mId)}, null);
-        mFavorite = (cursor != null) && (cursor.getCount() >0);
-        if (mFavorite){
-            faovirteButton.setBackgroundResource(R.mipmap.ic_favorites);
-        }else {
-            faovirteButton.setBackgroundResource(R.mipmap.ic_favorites_empty);
+    //Check if the movie is already in favorite list and change the "favorite" photo if it does
+    private void checkFavorite() {
+        Cursor cursor = getContentResolver().query(MoviesContract.MoviesEntry.CONTENT_URI, new String[]{MoviesContract.MoviesEntry.COLUMN_MOVIE_ID}
+                , MoviesContract.MoviesEntry.COLUMN_MOVIE_ID + "=?", new String[]{String.valueOf(mId)}, null);
+        mFavorite = (cursor != null) && (cursor.getCount() > 0);
+        if (mFavorite) {
+            favoriteButton.setBackgroundResource(R.mipmap.ic_favorites);
+        } else {
+            favoriteButton.setBackgroundResource(R.mipmap.ic_favorites_empty);
         }
+        assert cursor != null;
+        cursor.close();
     }
 
-    private void deleteFavorite(){
+    //Delete movie from favorite list
+    private void deleteFavorite() {
         getContentResolver().delete(MoviesContract.MoviesEntry.CONTENT_URI,
                 MoviesContract.MoviesEntry.COLUMN_MOVIE_ID + "=?",
                 new String[]{String.valueOf(mId)});

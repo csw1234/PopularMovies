@@ -2,7 +2,6 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -10,16 +9,16 @@
     <ImageView
         android:id="@+id/imageView2"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="0dp"
         android:layout_weight="1"
-        app:srcCompat="@android:color/black" />
+        app:srcCompat="@android:color/black"
+        android:contentDescription="@string/image" />
 
     <TextView
         android:id="@+id/reviewText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="32dp"
-        android:text="review"
         app:layout_constraintBottom_toBottomOf="@+id/play_button"
         app:layout_constraintStart_toEndOf="@+id/play_button"
         app:layout_constraintTop_toTopOf="@+id/play_button" />

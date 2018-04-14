@@ -20,4 +20,8 @@
     <string name="sort_by_favorites">Favorites</string>
     <string name="removed_from_favorites">Movie removed from favorites</string>
     <string name="empty_favorites">Favorites is empty</string>
+    <string name="favorite_button">Favorite button</string>
+    <string name="reviews">Reviews</string>
+    <string name="trailers">Trailers</string>
+    <string name="image">Image</string>
 </resources>

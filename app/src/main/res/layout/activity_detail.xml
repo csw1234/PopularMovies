@@ -16,7 +16,8 @@
             android:layout_height="wrap_content"
             android:background="#5696a0"
             android:contentDescription="@string/title_text"
-            android:paddingLeft="20dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
             android:textAlignment="viewStart"
             android:textSize="36sp"
             tools:layout_editor_absoluteX="545dp"
@@ -100,7 +101,8 @@
                     android:layout_weight="0"
                     android:adjustViewBounds="false"
                     android:background="@mipmap/ic_favorites_empty"
-                    android:cropToPadding="false" />
+                    android:cropToPadding="false"
+                    android:contentDescription="@string/favorite_button" />
 
             </LinearLayout>
 
@@ -135,7 +137,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Trailers"
+                    android:text="@string/trailers"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     tools:layout_editor_absoluteX="545dp"
@@ -155,7 +157,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Reviews"
+                    android:text="@string/reviews"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     tools:layout_editor_absoluteX="318dp"

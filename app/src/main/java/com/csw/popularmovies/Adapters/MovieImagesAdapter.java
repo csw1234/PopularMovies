@@ -1,4 +1,4 @@
-package com.csw.popularmovies;
+package com.csw.popularmovies.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,9 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
-
 import com.csw.popularmovies.Data.Movies.Movie;
+import com.csw.popularmovies.DetailActivity;
+import com.csw.popularmovies.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -20,11 +20,10 @@ import java.util.List;
 public class MovieImagesAdapter extends RecyclerView.Adapter<MovieImagesAdapter.MyViewHolder> {
     //List to hold the images
     private List<Movie> imageList;
-    private List<Movie> imageListFiltered;
     //Context to call the intent for the DetailActivity
     private Context mContext;
 
-    MovieImagesAdapter(List<Movie> imageList) {
+    public MovieImagesAdapter(List<Movie> imageList) {
         this.imageList = imageList;
     }
 
@@ -33,8 +32,7 @@ public class MovieImagesAdapter extends RecyclerView.Adapter<MovieImagesAdapter.
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         //Inflate the pic_layout into the trailersRecyclerView
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.pic_layout,parent,false);
-
+                .inflate(R.layout.pic_layout, parent, false);
         return new MyViewHolder(v);
     }
 
@@ -42,26 +40,25 @@ public class MovieImagesAdapter extends RecyclerView.Adapter<MovieImagesAdapter.
     public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
         //Get the image using the position and present it on the right place
         final Movie movie = imageList.get(position);
-        if ((movie.getPosterPath() != null) && (!movie.getPosterPath().equals(""))){
-        Picasso.with(holder.imageView.getContext()).load(buildImageUrl(movie.getPosterPath())).into(holder.imageView);
-    }
-
-    //Listen to image click
-    holder.imageView.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            //Pass the data to present in the DetailActivity
-            Intent intent = new Intent(mContext, DetailActivity.class);
-            intent.putExtra(DetailActivity.EXTRA_IMAGE, movie.getPosterPath());
-            intent.putExtra(DetailActivity.EXTRA_TITLE,movie.getTitle());
-            intent.putExtra(DetailActivity.EXTRA_OVERVIEW,movie.getOverview());
-            intent.putExtra(DetailActivity.EXTRA_DATE,movie.getReleaseDate());
-            intent.putExtra(DetailActivity.EXTRA_RATING,movie.getVoteAverage().toString());
-            intent.putExtra(DetailActivity.EXTRA_ID,movie.getMovieId().toString());
-            mContext.startActivity(intent);
+        if ((movie.getPosterPath() != null) && (!movie.getPosterPath().equals(""))) {
+            Picasso.with(holder.imageView.getContext()).load(buildImageUrl(movie.getPosterPath())).into(holder.imageView);
         }
-    });
 
+        //Listen to image click
+        holder.imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Pass the data to present in the DetailActivity
+                Intent intent = new Intent(mContext, DetailActivity.class);
+                intent.putExtra(DetailActivity.EXTRA_IMAGE, movie.getPosterPath());
+                intent.putExtra(DetailActivity.EXTRA_TITLE, movie.getTitle());
+                intent.putExtra(DetailActivity.EXTRA_OVERVIEW, movie.getOverview());
+                intent.putExtra(DetailActivity.EXTRA_DATE, movie.getReleaseDate());
+                intent.putExtra(DetailActivity.EXTRA_RATING, movie.getVoteAverage().toString());
+                intent.putExtra(DetailActivity.EXTRA_ID, movie.getMovieId().toString());
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -69,22 +66,19 @@ public class MovieImagesAdapter extends RecyclerView.Adapter<MovieImagesAdapter.
         return imageList.size();
     }
 
-
-
-    class MyViewHolder extends RecyclerView.ViewHolder{
+    class MyViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
 
         MyViewHolder(View itemView) {
             super(itemView);
             //Set the mContext into view context
             mContext = itemView.getContext();
-            imageView=itemView.findViewById(R.id.imageView);
+            imageView = itemView.findViewById(R.id.imageView);
         }
     }
 
-
     //Build the image Url from the movie position
-    public static String buildImageUrl(String positionPath){
+    public static String buildImageUrl(String positionPath) {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("http")
                 .authority("image.tmdb.org")
