@@ -20,6 +20,7 @@ import java.util.List;
 public class MovieImagesAdapter extends RecyclerView.Adapter<MovieImagesAdapter.MyViewHolder> {
     //List to hold the images
     private List<Movie> imageList;
+    private List<Movie> imageListFiltered;
     //Context to call the intent for the DetailActivity
     private Context mContext;
 
@@ -51,7 +52,7 @@ public class MovieImagesAdapter extends RecyclerView.Adapter<MovieImagesAdapter.
         public void onClick(View v) {
             //Pass the data to present in the DetailActivity
             Intent intent = new Intent(mContext, DetailActivity.class);
-            intent.putExtra(DetailActivity.EXTRA_IMAGE, buildImageUrl(movie.getPosterPath()));
+            intent.putExtra(DetailActivity.EXTRA_IMAGE, movie.getPosterPath());
             intent.putExtra(DetailActivity.EXTRA_TITLE,movie.getTitle());
             intent.putExtra(DetailActivity.EXTRA_OVERVIEW,movie.getOverview());
             intent.putExtra(DetailActivity.EXTRA_DATE,movie.getReleaseDate());
@@ -68,6 +69,8 @@ public class MovieImagesAdapter extends RecyclerView.Adapter<MovieImagesAdapter.
         return imageList.size();
     }
 
+
+
     class MyViewHolder extends RecyclerView.ViewHolder{
         ImageView imageView;
 
@@ -81,7 +84,7 @@ public class MovieImagesAdapter extends RecyclerView.Adapter<MovieImagesAdapter.
 
 
     //Build the image Url from the movie position
-    private String buildImageUrl(String positionPath){
+    public static String buildImageUrl(String positionPath){
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("http")
                 .authority("image.tmdb.org")

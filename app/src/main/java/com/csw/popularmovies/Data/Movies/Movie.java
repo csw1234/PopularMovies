@@ -47,4 +47,13 @@ public class Movie {
     }
 
     public Integer getMovieId() { return movieId; }
+
+    public Movie(Integer id, String title, String overview, String posterPath, String releaseDate, double voteAverage){
+        this.movieId = id;
+        this.title = title;
+        this.overview = overview;
+        this.posterPath = posterPath;
+        this.releaseDate = releaseDate;
+        this.voteAverage = voteAverage;
+    }
 }

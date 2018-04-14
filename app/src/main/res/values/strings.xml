@@ -17,4 +17,7 @@
     <string name="release_date_text">Release Date Text</string>
     <string name="title_text">Title Text</string>
     <string name="trailer">Trailer </string>
+    <string name="sort_by_favorites">Favorites</string>
+    <string name="removed_from_favorites">Movie removed from favorites</string>
+    <string name="empty_favorites">Favorites is empty</string>
 </resources>

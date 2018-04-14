@@ -2,6 +2,7 @@ package com.csw.popularmovies;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,9 +13,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.csw.popularmovies.Data.Movies.Page;
 import com.csw.popularmovies.Data.Movies.Movie;
+import com.csw.popularmovies.Databse.MoviesContract;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +69,8 @@ public class MainActivity extends AppCompatActivity {
                 //Iterate over the images
                 for(int i=0;i<result.size();i++){
                     Movie movie= result.get(i);
-                    imageList.add(movie);
+                        imageList.add(movie);
+
                 }
                 //Set the movies into the Adapter
                 MovieImagesAdapter movieImagesAdapter = new MovieImagesAdapter(imageList);
@@ -104,10 +108,42 @@ public class MainActivity extends AppCompatActivity {
                 editor.apply();
                 loadMovies();
                 return true;
+            case R.id.favorites:
+                loadFavoritesMovies();
+                return true;
+
             default:
                 editor.putString(sortBy, "popular");
                 editor.apply();
                 return true;
         }
+    }
+    private void loadFavoritesMovies(){
+        List<Movie> imageList =new ArrayList<>();
+
+        Cursor cursor = getContentResolver().query(MoviesContract.MoviesEntry.CONTENT_URI, null, null, null, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                Movie movie = new Movie(
+                        cursor.getInt(cursor.getColumnIndex(MoviesContract.MoviesEntry.COLUMN_MOVIE_ID)),
+                        cursor.getString(cursor.getColumnIndex(MoviesContract.MoviesEntry.COLUMN_MOVIE_TITLE)),
+                        cursor.getString(cursor.getColumnIndex(MoviesContract.MoviesEntry.COLUMN_MOVIE_OVERVIEW)),
+                        cursor.getString(cursor.getColumnIndex(MoviesContract.MoviesEntry.COLUMN_MOVIE_POSTER_PATH)),
+                        cursor.getString(cursor.getColumnIndex(MoviesContract.MoviesEntry.COLUMN_MOVIE_RELEASE_DATE)),
+                        cursor.getInt(cursor.getColumnIndex(MoviesContract.MoviesEntry.COLUMN_MOVIE_VOTE_AVERAGE))
+                );
+                imageList.add(movie);
+
+        }while (cursor.moveToNext());
+            //Set the movies into the Adapter
+            MovieImagesAdapter movieImagesAdapter = new MovieImagesAdapter(imageList);
+            recyclerView.setAdapter(movieImagesAdapter);
+    }else{
+            Toast.makeText(getApplicationContext(), R.string.empty_favorites, Toast.LENGTH_SHORT).show();
+        }
+    if (cursor != null){
+            cursor.close();
+    }
     }
 }

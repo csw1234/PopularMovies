@@ -1,19 +1,26 @@
 package com.csw.popularmovies;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.csw.popularmovies.Data.Movies.Movie;
 import com.csw.popularmovies.Data.Reviews.Review;
 import com.csw.popularmovies.Data.Reviews.Reviews;
 import com.csw.popularmovies.Data.Trailers.Trailer;
 import com.csw.popularmovies.Data.Trailers.Trailers;
+import com.csw.popularmovies.Databse.MoviesContract;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -37,11 +44,13 @@ public class DetailActivity extends AppCompatActivity {
     private String mRating;
     private String mDate;
     private String mId;
+    private Boolean mFavorite;
+    private String mImageUrl;
 
     //RecyclerView the present the trailers
     RecyclerView trailersRecyclerView;
     RecyclerView reviewsRecyclerView;
-
+    ImageButton faovirteButton;
     @Override
     protected void onStart() {
         super.onStart();
@@ -53,8 +62,10 @@ public class DetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        mFavorite = true;
 
         ImageView movieImage = findViewById(R.id.image_iv);
+        faovirteButton = findViewById(R.id.favoriteButton);
         reviewsRecyclerView = findViewById(R.id.recyclerviewReviews);
 
         trailersRecyclerView = findViewById(R.id.recyclerviewTrailers);
@@ -70,18 +81,44 @@ public class DetailActivity extends AppCompatActivity {
             closeOnError();
         }
         //Get the data from the adapter
-        String imageURL = intent.getStringExtra(EXTRA_IMAGE);
+        mImageUrl = intent.getStringExtra(EXTRA_IMAGE);
          mTitle = intent.getStringExtra(EXTRA_TITLE);
         mOverview = intent.getStringExtra(EXTRA_OVERVIEW);
         mRating = intent.getStringExtra(EXTRA_RATING);
         mDate = intent.getStringExtra(EXTRA_DATE);
         mId = intent.getStringExtra(EXTRA_ID);
 
+        checkFavorite();
+
         populateUI();
         //Present the Image using Picasso library
         Picasso.with(this)
-                .load(imageURL)
+                .load(MovieImagesAdapter.buildImageUrl(mImageUrl))
                 .into(movieImage);
+        faovirteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mFavorite){
+                    deleteFavorite();
+                }else {
+                    insertAsFavorite();
+                }
+            }
+        });
+
+    }
+    private void insertAsFavorite(){
+        //Create a new map of values, where column names are the keys
+        ContentValues mNewValues = new ContentValues();
+        mNewValues.put(MoviesContract.MoviesEntry.COLUMN_MOVIE_ID, mId);
+        mNewValues.put(MoviesContract.MoviesEntry.COLUMN_MOVIE_OVERVIEW, mOverview);
+        mNewValues.put(MoviesContract.MoviesEntry.COLUMN_MOVIE_RELEASE_DATE, mDate);
+        mNewValues.put(MoviesContract.MoviesEntry.COLUMN_MOVIE_TITLE, mTitle);
+        mNewValues.put(MoviesContract.MoviesEntry.COLUMN_MOVIE_VOTE_AVERAGE, mRating);
+        mNewValues.put(MoviesContract.MoviesEntry.COLUMN_MOVIE_FAVORED, !mFavorite);
+        mNewValues.put(MoviesContract.MoviesEntry.COLUMN_MOVIE_POSTER_PATH, mImageUrl);
+        getContentResolver().insert(MoviesContract.MoviesEntry.CONTENT_URI, mNewValues);
+        checkFavorite();
     }
 
     private void closeOnError() {
@@ -191,5 +228,24 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void checkFavorite(){
+        Cursor cursor = getContentResolver().query(MoviesContract.MoviesEntry.CONTENT_URI, new String[]{MoviesContract.MoviesEntry.COLUMN_MOVIE_ID }
+        , MoviesContract.MoviesEntry.COLUMN_MOVIE_ID + "=?", new String[]{String.valueOf(mId)}, null);
+        mFavorite = (cursor != null) && (cursor.getCount() >0);
+        if (mFavorite){
+            faovirteButton.setBackgroundResource(R.mipmap.ic_favorites);
+        }else {
+            faovirteButton.setBackgroundResource(R.mipmap.ic_favorites_empty);
+        }
+    }
+
+    private void deleteFavorite(){
+        getContentResolver().delete(MoviesContract.MoviesEntry.CONTENT_URI,
+                MoviesContract.MoviesEntry.COLUMN_MOVIE_ID + "=?",
+                new String[]{String.valueOf(mId)});
+        Toast.makeText(getApplicationContext(), R.string.removed_from_favorites, Toast.LENGTH_SHORT).show();
+        checkFavorite();
     }
 }
