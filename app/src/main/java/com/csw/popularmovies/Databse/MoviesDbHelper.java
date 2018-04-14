@@ -5,9 +5,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
-/**
- * Created by alonz on 06/10/2017.
- */
 
 public class MoviesDbHelper extends SQLiteOpenHelper {
 
@@ -21,7 +18,7 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String SQL_CREATE_PET_TABLE = "CREATE TABLE " + MoviesContract.MoviesEntry.TABLE_NAME+"("
+        String SQL_CREATE_MOVIE_TABLE = "CREATE TABLE " + MoviesContract.MoviesEntry.TABLE_NAME+"("
                 + BaseColumns._ID + " INTEGER NOT NULL PRIMARY KEY,"
                 + MoviesContract.MoviesEntry.COLUMN_MOVIE_ID + " TEXT NOT NULL,"
                 + MoviesContract.MoviesEntry.COLUMN_MOVIE_TITLE + " TEXT NOT NULL,"
@@ -31,7 +28,7 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
                 + MoviesContract.MoviesEntry.COLUMN_MOVIE_RELEASE_DATE + " TEXT,"
                 + MoviesContract.MoviesEntry.COLUMN_MOVIE_FAVORED + " INTEGER NOT NULL DEFAULT 0,"
                 + "UNIQUE (" + MoviesContract.MoviesEntry.COLUMN_MOVIE_ID + ") ON CONFLICT REPLACE)";
-        sqLiteDatabase.execSQL(SQL_CREATE_PET_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_MOVIE_TABLE);
     }
 
     @Override
